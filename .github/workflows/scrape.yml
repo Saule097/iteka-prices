@@ -1,0 +1,34 @@
+name: Scrape Drug Prices
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 03:00 UTC = 09:00 по Астане
+  workflow_dispatch:        # ручной запуск
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Установить зависимости
+        run: pip install requests beautifulsoup4 pandas gspread google-auth
+
+      - name: Запустить скрипт
+        run: python scrape_iteka.py
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+
+      - name: Сохранить CSV в репозиторий
+        run: |
+          git config user.email 'bot@github.com'
+          git config user.name 'GitHub Actions Bot'
+          git add drug_prices.csv
+          git diff --staged --quiet || git commit -m "📊 $(date +%Y-%m-%d)"
+          git push
