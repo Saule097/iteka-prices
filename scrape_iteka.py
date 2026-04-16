@@ -229,8 +229,11 @@ def save_to_sheets(rows):
     creds  = Credentials.from_service_account_info(creds_json, scopes=scopes)
     client = gspread.authorize(creds)
     sheet  = client.open_by_key(spreadsheet_id).sheet1
+
+    # Собираем все строки в список и отправляем одним запросом
+    all_rows = []
     for row in rows:
-        sheet.append_row([
+        all_rows.append([
             row["Дата"],
             row["Препарат"],
             row["Город"],
@@ -238,9 +241,12 @@ def save_to_sheets(rows):
             row["Мин. цена (тг)"],
             row["Средняя цена (тг)"],
             row["Макс. цена (тг)"],
+            row["Медиана цены (тг)"],
             row["Чаще всего продают по (тг)"],
         ])
-    print(f"  Google Sheets: добавлено {len(rows)} строк")
+
+    sheet.append_rows(all_rows, value_input_option="USER_ENTERED")
+    print(f"  Google Sheets: добавлено {len(rows)} строк (пакетом)")
 
 
 # ══════════════════════════════════════════════════
