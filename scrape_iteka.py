@@ -169,7 +169,7 @@ def parse_drug(name, slug, city):
         "Мин. цена (тг)":              None,
         "Средняя цена (тг)":           None,
         "Макс. цена (тг)":             None,
-        "Чаще всего продают по (тг)":  None,
+        "Чаще всего продают по цене":  None,
     }
     try:
         r = requests.get(url, headers=headers, timeout=15)
@@ -196,8 +196,8 @@ def parse_drug(name, slug, city):
                     row["Средняя цена (тг)"] = clean_price(value)
                 elif "Самая высокая цена" in label:
                     row["Макс. цена (тг)"] = clean_price(value)
-                elif "Чаще всего" in label:
-                    row["Чаще всего продают по (тг)"] = clean_price(value)
+                elif "Чаще всего продают по цене" in label:
+                    row["Чаще всего продают по цене"] = clean_price(value)
 
         else:
             print(f"  таблица price-statistic не найдена: {name}")
@@ -220,7 +220,7 @@ def parse_drug(name, slug, city):
 # E: Мин. цена (тг)
 # F: Средняя цена (тг)
 # G: Макс. цена (тг)
-# H: Чаще всего продают по (тг)
+# H: Чаще всего продают по цене
 # ══════════════════════════════════════════════════
 def save_to_sheets(rows):
     creds_json     = json.loads(os.environ["GOOGLE_CREDENTIALS"])
@@ -241,7 +241,7 @@ def save_to_sheets(rows):
             row["Мин. цена (тг)"],
             row["Средняя цена (тг)"],
             row["Макс. цена (тг)"],
-            row["Чаще всего продают по (тг)"],
+            row["Чаще всего продают по цене"],
         ])
 
     sheet.append_rows(all_rows, value_input_option="USER_ENTERED")
@@ -274,7 +274,7 @@ def main():
                 f"Мин: {row['Мин. цена (тг)']:,.0f} | "
                 f"Ср: {row['Средняя цена (тг)']:,.0f} | "
                 f"Макс: {row['Макс. цена (тг)']:,.0f} | "
-                f"Мода: {row['Чаще всего продают по (тг)']:,.0f} | "
+                f"Мода: {row['Чаще всего продают по цене']:,.0f} | "
                 f"Аптек: {row['Аптек']}"
             )
         else:
