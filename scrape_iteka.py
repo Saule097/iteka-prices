@@ -196,7 +196,7 @@ def parse_drug(name, slug, city):
                     row["Средняя цена (тг)"] = clean_price(value)
                 elif "Самая высокая цена" in label:
                     row["Макс. цена (тг)"] = clean_price(value)
-                elif "Чаще всего продают по цене" in label:
+                elif "Чаще" in label:
                     row["Чаще всего продают по цене"] = clean_price(value)
 
         else:
