@@ -181,26 +181,32 @@ def parse_drug(name, slug, city):
         if table:
             rows_html = table.find_all("tr")
             for tr in rows_html:
-                cells = tr.find_all("td")
-                if len(cells) < 2:
-                    continue
-                label = cells[0].get_text(strip=True)
-                value = cells[1].get_text(strip=True)
+    cells = tr.find_all("td")
+    if len(cells) < 2:
+        continue
+    # Убираем эмодзи и лишние пробелы из label
+    label = re.sub(r"[^\w\s.,/]", "", cells[0].get_text(strip=True)).strip()
+    value = cells[1].get_text(strip=True)
 
-                if "Продают аптек" in label:
-                    cleaned = re.sub(r"[^\d]", "", value)
-                    row["Аптек"] = int(cleaned) if cleaned else None
-                elif "Самая низкая цена" in label:
-                    row["Мин. цена (тг)"] = clean_price(value)
-                elif "Средняя цена" in label:
-                    row["Средняя цена (тг)"] = clean_price(value)
-                elif "Самая высокая цена" in label:
-                    row["Макс. цена (тг)"] = clean_price(value)
-                elif "Чаще" in label:
-                    row["Чаще всего продают по цене"] = clean_price(value)
+    if "Продают аптек" in label:
+        cleaned = re.sub(r"[^\d]", "", value)
+        row["Аптек"] = int(cleaned) if cleaned else None
+    elif "Самая низкая цена" in label:
+        row["Мин. цена (тг)"] = clean_price(value)
+    elif "Средняя цена" in label:
+        row["Средняя цена (тг)"] = clean_price(value)
+    elif "Самая высокая цена" in label:
+        row["Макс. цена (тг)"] = clean_price(value)
+    elif "Чаще" in label:
+        row["Чаще всего продают по (тг)"] = clean_price(value)
 
         else:
-            print(f"  таблица price-statistic не найдена: {name}")
+            # Попробуем найти через JSON-LD как запасной вариант
+            tag = soup.find("script", {"type": "application/ld+json"})
+            if tag:
+                print(f"  price-statistic не найдена, есть JSON-LD: {name}")
+            else:
+                print(f"  нет данных совсем (возможно страница не загрузилась): {name}")
 
     except requests.HTTPError as e:
         print(f"  HTTP {e.response.status_code}: {name}")
@@ -279,7 +285,7 @@ def main():
             )
         else:
             print("нет данных")
-        time.sleep(0.5)
+        time.sleep(1)
 
     print()
     save_to_csv(rows)
