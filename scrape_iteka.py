@@ -181,23 +181,23 @@ def parse_drug(name, slug, city):
         if table:
             rows_html = table.find_all("tr")
             for tr in rows_html:
-            cells = tr.find_all("td")
-            if len(cells) < 2:
-                continue
-            label = re.sub(r"[^\w\s.,/]", "", cells[0].get_text(strip=True)).strip()
-            value = cells[1].get_text(strip=True)
+                cells = tr.find_all("td")
+                if len(cells) < 2:
+                    continue
+                label = re.sub(r"[^\w\s.,/]", "", cells[0].get_text(strip=True)).strip()
+                value = cells[1].get_text(strip=True)
 
-            if "Продают аптек" in label:
-                cleaned = re.sub(r"[^\d]", "", value)
-                row["Аптек"] = int(cleaned) if cleaned else None
-            elif "Самая низкая цена" in label:
-                row["Мин. цена (тг)"] = clean_price(value)
-            elif "Средняя цена" in label:
-                row["Средняя цена (тг)"] = clean_price(value)
-            elif "Самая высокая цена" in label:
-                row["Макс. цена (тг)"] = clean_price(value)
-            elif "Чаще" in label:
-                row["Чаще всего продают по (тг)"] = clean_price(value)
+                if "Продают аптек" in label:
+                    cleaned = re.sub(r"[^\d]", "", value)
+                    row["Аптек"] = int(cleaned) if cleaned else None
+                elif "Самая низкая цена" in label:
+                    row["Мин. цена (тг)"] = clean_price(value)
+                elif "Средняя цена" in label:
+                    row["Средняя цена (тг)"] = clean_price(value)
+                elif "Самая высокая цена" in label:
+                    row["Макс. цена (тг)"] = clean_price(value)
+                elif "Чаще" in label:
+                    row["Чаще всего продают по (тг)"] = clean_price(value)
 
         else:
             tag = soup.find("script", {"type": "application/ld+json"})
@@ -212,6 +212,7 @@ def parse_drug(name, slug, city):
         print(f"  Ошибка {name}: {e}")
 
     return row
+
 
 
 # ══════════════════════════════════════════════════
