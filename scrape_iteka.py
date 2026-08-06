@@ -137,7 +137,13 @@ def clean_price(text):
 # ══════════════════════════════════════════════════
 def parse_drug(name, slug, city):
     url = f"https://i-teka.kz/{city}/medicaments/{slug}"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xhtml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ru-RU,ru;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+}
     row = {
         "Дата":                       datetime.now().strftime("%Y-%m-%d"),
         "Препарат":                   name,
