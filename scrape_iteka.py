@@ -161,7 +161,7 @@ def parse_drug(name, slug, city):
                 if len(cells) < 2:
                     continue
                 # убираем эмодзи и лишние символы из метки
-                label = re.sub(r"[^\w\s.,/]", "", cells[0].get_text(strip=True)).strip()
+                label = re.sub(r"[^\w\s.,/]", "", cells[0].get_text(strip=True), flags=re.UNICODE).strip()
                 value = cells[1].get_text(strip=True)
 
                 if "Продают аптек" in label:
